@@ -5,11 +5,10 @@
 //  Created by cipher-shad0w on 30/10/2025
 //
 
-import XCTest
 @testable import EasyQuit
+import XCTest
 
 final class EasyQuitTests: XCTestCase {
-
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -28,9 +27,8 @@ final class EasyQuitTests: XCTestCase {
 
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
-        self.measure {
+        measure {
             // Put the code you want to measure the time of here.
         }
     }
-
 }

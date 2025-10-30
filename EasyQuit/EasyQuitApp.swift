@@ -5,8 +5,8 @@
 //  Created by cipher-shad0w on 30/10/2025
 //
 
-import SwiftUI
 import os.log
+import SwiftUI
 
 @main
 struct EasyQuitApp {
@@ -23,17 +23,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var menuBarManager: MenuBarManager?
     private let logger = Logger(subsystem: "com.cipher-shadow.EasyQuit", category: "AppDelegate")
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
+    func applicationDidFinishLaunching(_: Notification) {
         logger.info("Application did finish launching")
         logger.info("Creating MenuBarManager...")
 
         menuBarManager = MenuBarManager()
 
-        logger.info("MenuBarManager created: \(self.menuBarManager != nil)")
+        logger.info("MenuBarManager created: \(menuBarManager != nil)")
         logger.info("Setup complete")
     }
 
-    func applicationWillTerminate(_ notification: Notification) {
+    func applicationWillTerminate(_: Notification) {
         logger.info("Application will terminate")
     }
 }

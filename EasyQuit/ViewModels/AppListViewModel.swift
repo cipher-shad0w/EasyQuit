@@ -5,9 +5,9 @@
 //  Created by cipher-shad0w on 30/10/2025
 //
 
-import Foundation
 import AppKit
 import Combine
+import Foundation
 
 class AppListViewModel: ObservableObject {
     @Published var runningApps: [RunningApp] = []

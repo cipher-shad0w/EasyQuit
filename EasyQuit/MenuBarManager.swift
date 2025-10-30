@@ -5,9 +5,9 @@
 //  Created by cipher-shad0w on 30/10/2025
 //
 
-import SwiftUI
 import AppKit
 import os.log
+import SwiftUI
 
 class MenuBarManager: NSObject {
     private var statusItem: NSStatusItem?
@@ -25,7 +25,7 @@ class MenuBarManager: NSObject {
 
         // Create status item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        logger.info("Status item created: \(self.statusItem != nil)")
+        logger.info("Status item created: \(statusItem != nil)")
 
         if let button = statusItem?.button {
             logger.info("Status button found, setting image")
@@ -47,7 +47,7 @@ class MenuBarManager: NSObject {
 
     @objc private func togglePopover() {
         logger.info("Toggle popover called")
-        guard let popover = popover else {
+        guard let popover else {
             logger.error("Popover is nil")
             return
         }

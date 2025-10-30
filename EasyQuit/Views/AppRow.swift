@@ -5,16 +5,16 @@
 //  Created by cipher-shad0w on 30/10/2025
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 struct AppRow: View {
     let app: RunningApp
     let isSelected: Bool
-    let onQuit: (Bool) -> Void
-    let onRestart: () -> Void
-    let onShowInFinder: () -> Void
-    let onIgnore: () -> Void
+    let onQuit: (Bool) -> ()
+    let onRestart: () -> ()
+    let onShowInFinder: () -> ()
+    let onIgnore: () -> ()
     @State private var isHovered = false
     @State private var isClosing = false
 
@@ -90,7 +90,7 @@ struct AppRow: View {
         }
     }
 
-    private func animateClose(completion: @escaping () -> Void) {
+    private func animateClose(completion: @escaping () -> ()) {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8, blendDuration: 0)) {
             isClosing = true
         }

@@ -5,8 +5,8 @@
 //  Created by cipher-shad0w on 30/10/2025
 //
 
-import Foundation
 import AppKit
+import Foundation
 
 struct RunningApp: Identifiable, Hashable {
     let id: Int

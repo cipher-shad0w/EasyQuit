@@ -8,7 +8,6 @@
 import XCTest
 
 final class EasyQuitUITestsLaunchTests: XCTestCase {
-
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }
