@@ -1,0 +1,618 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		F4FB5E8B2EB412D8009A69A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FB5E732EB412D6009A69A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4FB5E7A2EB412D6009A69A4;
+			remoteInfo = EasyQuit;
+		};
+		F4FB5E952EB412D8009A69A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4FB5E732EB412D6009A69A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4FB5E7A2EB412D6009A69A4;
+			remoteInfo = EasyQuit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F4FB5E7B2EB412D6009A69A4 /* EasyQuit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EasyQuit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4FB5E8A2EB412D8009A69A4 /* EasyQuitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EasyQuitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4FB5E942EB412D8009A69A4 /* EasyQuitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EasyQuitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4FB5EB52EB41317009A69A4 /* EasyQuit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EasyQuit.xcodeproj; sourceTree = "<group>"; };
+		F4FB5EE32EB41B42009A69A4 /* EasyQuit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EasyQuit.xcodeproj; sourceTree = "<group>"; };
+		F4FD51EE2EB420260013657A /* EasyQuit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EasyQuit.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		F4FB5E7D2EB412D6009A69A4 /* EasyQuit */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = EasyQuit;
+			sourceTree = "<group>";
+		};
+		F4FB5E8D2EB412D8009A69A4 /* EasyQuitTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = EasyQuitTests;
+			sourceTree = "<group>";
+		};
+		F4FB5E972EB412D8009A69A4 /* EasyQuitUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = EasyQuitUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F4FB5E782EB412D6009A69A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FB5E872EB412D8009A69A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FB5E912EB412D8009A69A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F4FB5E722EB412D6009A69A4 = {
+			isa = PBXGroup;
+			children = (
+				F4FB5E7D2EB412D6009A69A4 /* EasyQuit */,
+				F4FB5E8D2EB412D8009A69A4 /* EasyQuitTests */,
+				F4FB5E972EB412D8009A69A4 /* EasyQuitUITests */,
+				F4FB5E7C2EB412D6009A69A4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F4FB5E7C2EB412D6009A69A4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F4FB5E7B2EB412D6009A69A4 /* EasyQuit.app */,
+				F4FB5E8A2EB412D8009A69A4 /* EasyQuitTests.xctest */,
+				F4FB5E942EB412D8009A69A4 /* EasyQuitUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4FB5EB62EB41317009A69A4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4FB5EE52EB41B42009A69A4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4FD51F02EB420260013657A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F4FB5E7A2EB412D6009A69A4 /* EasyQuit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4FB5E9E2EB412D8009A69A4 /* Build configuration list for PBXNativeTarget "EasyQuit" */;
+			buildPhases = (
+				F4FB5E772EB412D6009A69A4 /* Sources */,
+				F4FB5E782EB412D6009A69A4 /* Frameworks */,
+				F4FB5E792EB412D6009A69A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F4FB5E7D2EB412D6009A69A4 /* EasyQuit */,
+			);
+			name = EasyQuit;
+			packageProductDependencies = (
+			);
+			productName = EasyQuit;
+			productReference = F4FB5E7B2EB412D6009A69A4 /* EasyQuit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F4FB5E892EB412D8009A69A4 /* EasyQuitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4FB5EA12EB412D8009A69A4 /* Build configuration list for PBXNativeTarget "EasyQuitTests" */;
+			buildPhases = (
+				F4FB5E862EB412D8009A69A4 /* Sources */,
+				F4FB5E872EB412D8009A69A4 /* Frameworks */,
+				F4FB5E882EB412D8009A69A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4FB5E8C2EB412D8009A69A4 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F4FB5E8D2EB412D8009A69A4 /* EasyQuitTests */,
+			);
+			name = EasyQuitTests;
+			packageProductDependencies = (
+			);
+			productName = EasyQuitTests;
+			productReference = F4FB5E8A2EB412D8009A69A4 /* EasyQuitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F4FB5E932EB412D8009A69A4 /* EasyQuitUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4FB5EA42EB412D8009A69A4 /* Build configuration list for PBXNativeTarget "EasyQuitUITests" */;
+			buildPhases = (
+				F4FB5E902EB412D8009A69A4 /* Sources */,
+				F4FB5E912EB412D8009A69A4 /* Frameworks */,
+				F4FB5E922EB412D8009A69A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4FB5E962EB412D8009A69A4 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F4FB5E972EB412D8009A69A4 /* EasyQuitUITests */,
+			);
+			name = EasyQuitUITests;
+			packageProductDependencies = (
+			);
+			productName = EasyQuitUITests;
+			productReference = F4FB5E942EB412D8009A69A4 /* EasyQuitUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4FB5E732EB412D6009A69A4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					F4FB5E7A2EB412D6009A69A4 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					F4FB5E892EB412D8009A69A4 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = F4FB5E7A2EB412D6009A69A4;
+					};
+					F4FB5E932EB412D8009A69A4 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = F4FB5E7A2EB412D6009A69A4;
+					};
+				};
+			};
+			buildConfigurationList = F4FB5E762EB412D6009A69A4 /* Build configuration list for PBXProject "EasyQuit" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F4FB5E722EB412D6009A69A4;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F4FB5E7C2EB412D6009A69A4 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F4FB5EE52EB41B42009A69A4 /* Products */;
+					ProjectRef = F4FB5EE32EB41B42009A69A4 /* EasyQuit.xcodeproj */;
+				},
+				{
+					ProductGroup = F4FD51F02EB420260013657A /* Products */;
+					ProjectRef = F4FD51EE2EB420260013657A /* EasyQuit.xcodeproj */;
+				},
+				{
+					ProductGroup = F4FB5EB62EB41317009A69A4 /* Products */;
+					ProjectRef = F4FB5EB52EB41317009A69A4 /* EasyQuit.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F4FB5E7A2EB412D6009A69A4 /* EasyQuit */,
+				F4FB5E892EB412D8009A69A4 /* EasyQuitTests */,
+				F4FB5E932EB412D8009A69A4 /* EasyQuitUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F4FB5E792EB412D6009A69A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FB5E882EB412D8009A69A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FB5E922EB412D8009A69A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F4FB5E772EB412D6009A69A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FB5E862EB412D8009A69A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FB5E902EB412D8009A69A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F4FB5E8C2EB412D8009A69A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4FB5E7A2EB412D6009A69A4 /* EasyQuit */;
+			targetProxy = F4FB5E8B2EB412D8009A69A4 /* PBXContainerItemProxy */;
+		};
+		F4FB5E962EB412D8009A69A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4FB5E7A2EB412D6009A69A4 /* EasyQuit */;
+			targetProxy = F4FB5E952EB412D8009A69A4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		F4FB5E9C2EB412D8009A69A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F4FB5E9D2EB412D8009A69A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F4FB5E9F2EB412D8009A69A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cipher-shad0w.EasyQuit";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F4FB5EA02EB412D8009A69A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cipher-shad0w.EasyQuit";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F4FB5EA22EB412D8009A69A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cipher-shad0w.EasyQuitTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EasyQuit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EasyQuit";
+			};
+			name = Debug;
+		};
+		F4FB5EA32EB412D8009A69A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cipher-shad0w.EasyQuitTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EasyQuit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EasyQuit";
+			};
+			name = Release;
+		};
+		F4FB5EA52EB412D8009A69A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cipher-shad0w.EasyQuitUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = EasyQuit;
+			};
+			name = Debug;
+		};
+		F4FB5EA62EB412D8009A69A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 49JX7TCFWU;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cipher-shad0w.EasyQuitUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = EasyQuit;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F4FB5E762EB412D6009A69A4 /* Build configuration list for PBXProject "EasyQuit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4FB5E9C2EB412D8009A69A4 /* Debug */,
+				F4FB5E9D2EB412D8009A69A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4FB5E9E2EB412D8009A69A4 /* Build configuration list for PBXNativeTarget "EasyQuit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4FB5E9F2EB412D8009A69A4 /* Debug */,
+				F4FB5EA02EB412D8009A69A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4FB5EA12EB412D8009A69A4 /* Build configuration list for PBXNativeTarget "EasyQuitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4FB5EA22EB412D8009A69A4 /* Debug */,
+				F4FB5EA32EB412D8009A69A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4FB5EA42EB412D8009A69A4 /* Build configuration list for PBXNativeTarget "EasyQuitUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4FB5EA52EB412D8009A69A4 /* Debug */,
+				F4FB5EA62EB412D8009A69A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4FB5E732EB412D6009A69A4 /* Project object */;
+}
