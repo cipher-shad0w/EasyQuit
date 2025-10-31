@@ -184,6 +184,20 @@ struct KeyboardShortcut: Codable, Equatable {
         case 0x7D: return "↓"
         case 0x7B: return "←"
         case 0x7C: return "→"
+        case 0x2F: return "."
+        case 0x2B: return ","
+        case 0x7A: return "F1"
+        case 0x78: return "F2"
+        case 0x63: return "F3"
+        case 0x76: return "F4"
+        case 0x60: return "F5"
+        case 0x61: return "F6"
+        case 0x62: return "F7"
+        case 0x64: return "F8"
+        case 0x65: return "F9"
+        case 0x6D: return "F10"
+        case 0x67: return "F11"
+        case 0x6F: return "F12"
         default: return nil
         }
     }
