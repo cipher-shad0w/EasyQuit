@@ -15,6 +15,8 @@ struct SettingsView: View {
     @AppStorage("hideSystemApps") private var hideSystemApps: Bool = true
     @AppStorage("compactView") private var compactView: Bool = false
 
+    @State private var globalShortcut: KeyboardShortcut?
+
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -36,6 +38,11 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.top, 8)
+
+                    // Keyboard Shortcut Section
+                    SettingsSection(title: "Keyboard", icon: "keyboard") {
+                        ShortcutRecorderView(shortcut: $globalShortcut)
+                    }
 
                     // Performance Section
                     SettingsSection(title: "Performance", icon: "gauge.with.dots.needle.bottom.50percent") {
@@ -125,6 +132,38 @@ struct SettingsView: View {
             }
         }
         .frame(width: 450, height: 550)
+        .onAppear {
+            loadShortcutFromUserDefaults()
+        }
+        .onChange(of: globalShortcut) { _, newValue in
+            saveShortcutToUserDefaults()
+            notifyShortcutChange()
+        }
+    }
+
+    private func loadShortcutFromUserDefaults() {
+        guard let data = UserDefaults.standard.data(forKey: "globalShortcut"),
+              let shortcut = try? JSONDecoder().decode(KeyboardShortcut.self, from: data) else {
+            return
+        }
+        globalShortcut = shortcut
+    }
+
+    private func saveShortcutToUserDefaults() {
+        if let shortcut = globalShortcut,
+           let data = try? JSONEncoder().encode(shortcut) {
+            UserDefaults.standard.set(data, forKey: "globalShortcut")
+        } else {
+            UserDefaults.standard.removeObject(forKey: "globalShortcut")
+        }
+    }
+
+    private func notifyShortcutChange() {
+        NotificationCenter.default.post(
+            name: NSNotification.Name("GlobalShortcutChanged"),
+            object: nil,
+            userInfo: ["shortcut": globalShortcut as Any]
+        )
     }
 }
 

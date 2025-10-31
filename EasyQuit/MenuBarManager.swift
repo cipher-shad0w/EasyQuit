@@ -14,11 +14,18 @@ class MenuBarManager: NSObject {
     private var popover: NSPopover?
     private var settingsWindow: NSWindow?
     private let logger = Logger(subsystem: "com.cipher-shadow.EasyQuit", category: "MenuBarManager")
+    private let hotkeyManager = HotkeyManager()
 
     override init() {
         super.init()
         logger.info("MenuBarManager init started")
         setupMenuBar()
+        setupHotkey()
+        observeShortcutChanges()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     private func setupMenuBar() {
@@ -143,9 +150,59 @@ class MenuBarManager: NSObject {
             if let button = statusItem?.button {
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
                 logger.info("Popover shown")
+
+                // Activate the app to ensure the popover gets focus
+                NSApp.activate(ignoringOtherApps: true)
             } else {
                 logger.error("Status button is nil")
             }
+        }
+    }
+
+    // MARK: - Hotkey Management
+
+    private func setupHotkey() {
+        logger.info("Setting up hotkey")
+
+        // Load saved shortcut from UserDefaults
+        if let data = UserDefaults.standard.data(forKey: "globalShortcut"),
+           let shortcut = try? JSONDecoder().decode(KeyboardShortcut.self, from: data) {
+            registerHotkey(shortcut)
+        }
+
+        // Set up hotkey action
+        hotkeyManager.onHotkeyPressed = { [weak self] in
+            DispatchQueue.main.async {
+                self?.togglePopover()
+            }
+        }
+    }
+
+    private func observeShortcutChanges() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("GlobalShortcutChanged"),
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            if let shortcut = notification.userInfo?["shortcut"] as? KeyboardShortcut {
+                self?.registerHotkey(shortcut)
+            } else {
+                self?.hotkeyManager.unregisterHotkey()
+                self?.logger.info("Hotkey unregistered")
+            }
+        }
+    }
+
+    private func registerHotkey(_ shortcut: KeyboardShortcut) {
+        logger.info("Registering hotkey: \(shortcut.displayString)")
+        let success = hotkeyManager.registerHotkey(
+            keyCode: UInt32(shortcut.keyCode),
+            modifiers: shortcut.carbonModifiers
+        )
+        if success {
+            logger.info("Hotkey registered successfully: \(shortcut.displayString)")
+        } else {
+            logger.error("Failed to register hotkey: \(shortcut.displayString)")
         }
     }
 }

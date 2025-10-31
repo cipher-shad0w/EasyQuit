@@ -29,7 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         menuBarManager = MenuBarManager()
 
-        logger.info("MenuBarManager created: \(menuBarManager != nil)")
+        logger.info("MenuBarManager created: \(self.menuBarManager != nil)")
         logger.info("Setup complete")
     }
 
