@@ -75,7 +75,7 @@ jobs:
           xcodebuild \
             archive \
             -project EasyQuit.xcodeproj/ \
-            -scheme "EasyQuit (GH ACTIONS)" \
+            -scheme "EasyQuit" \
             -destination 'generic/platform=macOS' \
             -archivePath dist/EasyQuit.xcarchive \
             -allowProvisioningUpdates \
