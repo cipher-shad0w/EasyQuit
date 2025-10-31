@@ -1,0 +1,189 @@
+name: EasyQuit Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on tags like v1.0.0, v1.0.1, etc.
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: macos-26
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏷️ Extract version from tag
+        run: |
+          # Extract version from git tag (e.g., v1.0.0 -> 1.0.0)
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          APP_VERSION=${TAG_NAME#v}
+          APP_BUILD=$(git rev-list --count HEAD)
+
+          # Get previous tag for changelog
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${TAG_NAME}^ 2>/dev/null || echo "")
+
+          echo "Tag: $TAG_NAME"
+          echo "Version: $APP_VERSION"
+          echo "Build: $APP_BUILD"
+          echo "Previous tag: $PREVIOUS_TAG"
+
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          echo "APP_BUILD=$APP_BUILD" >> $GITHUB_ENV
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+
+      - name: 🔧 Select Xcode
+        run: sudo xcode-select -s "/Applications/Xcode.app"
+
+      - name: 🎟️ Install Development & Developer ID Certificate
+        env:
+          DEVELOPMENT_CERT_BASE64: ${{ secrets.DEVELOPMENT_CERT_BASE64 }}
+          DEVELOPER_ID_CERT_BASE64: ${{ secrets.DEVELOPER_ID_CERT_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          DEVELOPMENT_CERT_PATH=$RUNNER_TEMP/dev.p12
+          DEVELOPER_ID_CERT_PATH=$RUNNER_TEMP/devid.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          echo -n "$DEVELOPMENT_CERT_BASE64" | base64 --decode -o $DEVELOPMENT_CERT_PATH
+          echo -n "$DEVELOPER_ID_CERT_BASE64" | base64 --decode -o $DEVELOPER_ID_CERT_PATH
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          security import $DEVELOPMENT_CERT_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $DEVELOPER_ID_CERT_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+      - name: 🎟️ Install Provision Profile
+        if: false
+        env:
+          PROVISION_PROFILE_BASE64: ${{ secrets.PROVISION_PROFILE_BASE64 }}
+        run: |
+          PP_PATH=$RUNNER_TEMP/EasyQuit.provisionprofile
+          echo -n "$PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: 🛠️ Build EasyQuit
+        run: |
+          xcodebuild \
+            archive \
+            -project EasyQuit.xcodeproj/ \
+            -scheme "EasyQuit (GH ACTIONS)" \
+            -destination 'generic/platform=macOS' \
+            -archivePath dist/EasyQuit.xcarchive \
+            -allowProvisioningUpdates \
+            MARKETING_VERSION=${{ env.APP_VERSION }} \
+            CURRENT_PROJECT_VERSION=${{ env.APP_BUILD }}
+
+      - name: 🥡 Export EasyQuit.app
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath dist/EasyQuit.xcarchive \
+            -exportPath dist/ \
+            -exportOptionsPlist assets/ExportOptions.plist \
+            -allowProvisioningUpdates
+
+      - name: 🤏 Compress EasyQuit for notarization
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent "dist/EasyQuit.app" "dist/EasyQuit.zip"
+
+      - name: ✅ Notarize EasyQuit
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PWD: ${{ secrets.APPLE_ID_PWD }}
+        run: |
+          xcrun notarytool store-credentials EasyQuit --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_ID_PWD"
+          xcrun notarytool submit "dist/EasyQuit.zip" --keychain-profile "EasyQuit" --wait
+          xcrun stapler staple "dist/EasyQuit.app"
+
+      - name: 🤏 Compress notarized EasyQuit
+        run: |
+          rm dist/EasyQuit.zip
+          ditto -c -k --sequesterRsrc --keepParent "dist/EasyQuit.app" "dist/EasyQuit.zip"
+
+      - name: 📊 Calculate SHA256
+        run: |
+          SHA256=$(shasum -a 256 dist/EasyQuit.zip | awk '{print $1}')
+          echo "SHA256: $SHA256"
+          echo "SHA256=$SHA256" >> $GITHUB_ENV
+
+      - name: ⬆️ Upload EasyQuit Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyQuit-${{ env.TAG_NAME }}
+          path: dist/EasyQuit.zip
+
+      - name: 📰 Build Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          outputFile: CHANGELOG.md
+          fromTag: ${{ env.PREVIOUS_TAG }}
+          toTag: ${{ env.TAG_NAME }}
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n## 💭 Uncategorized\n#{{UNCATEGORIZED}}",
+              "pr_template": "- #{{TITLE}} ##{{NUMBER}}",
+              "categories": [
+                {
+                    "title": "## ✨ New Features",
+                    "labels": ["Feature", "Enhancement", "Improvement"]
+                },
+                {
+                    "title": "## 🐞 Bug Fixes",
+                    "labels": ["Bug", "Fix"]
+                },
+                {
+                    "title": "## 🌐 Localization",
+                    "labels": ["Localization"]
+                }
+              ],
+              "empty_template": "- Initial release"
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🥳 Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: dist/EasyQuit.zip
+          bodyFile: CHANGELOG.md
+          name: "EasyQuit ${{ env.APP_VERSION }}"
+          tag: ${{ env.TAG_NAME }}
+          prerelease: false
+          draft: false
+          makeLatest: true
+
+      - name: 📝 Post-release info
+        run: |
+          echo "========================================"
+          echo "✅ Release published successfully!"
+          echo "========================================"
+          echo "Version: ${{ env.APP_VERSION }}"
+          echo "Tag: ${{ env.TAG_NAME }}"
+          echo "Build: ${{ env.APP_BUILD }}"
+          echo "SHA256: ${{ env.SHA256 }}"
+          echo "========================================"
+          echo ""
+          echo "🍺 Next steps for Homebrew:"
+          echo "1. Create a tap repository: homebrew-easyquit"
+          echo "2. Add a Cask file with this SHA256: ${{ env.SHA256 }}"
+          echo "3. Users can install with: brew install cipher-shad0w/easyquit/easyquit"
+          echo "========================================"
+
+      - name: 🧹 Cleanup
+        run: |
+          security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db"
