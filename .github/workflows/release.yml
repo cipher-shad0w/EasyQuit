@@ -41,26 +41,22 @@ jobs:
       - name: 🔧 Select Xcode
         run: sudo xcode-select -s "/Applications/Xcode.app"
 
-      - name: 🎟️ Install Development & Developer ID Certificate
+      - name: 🎟️ Install Development Certificate
         env:
           DEVELOPMENT_CERT_BASE64: ${{ secrets.DEVELOPMENT_CERT_BASE64 }}
-          DEVELOPER_ID_CERT_BASE64: ${{ secrets.DEVELOPER_ID_CERT_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           DEVELOPMENT_CERT_PATH=$RUNNER_TEMP/dev.p12
-          DEVELOPER_ID_CERT_PATH=$RUNNER_TEMP/devid.p12
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           echo -n "$DEVELOPMENT_CERT_BASE64" | base64 --decode -o $DEVELOPMENT_CERT_PATH
-          echo -n "$DEVELOPER_ID_CERT_BASE64" | base64 --decode -o $DEVELOPER_ID_CERT_PATH
 
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
           security import $DEVELOPMENT_CERT_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security import $DEVELOPER_ID_CERT_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
 
           security list-keychain -d user -s $KEYCHAIN_PATH
 
@@ -95,23 +91,8 @@ jobs:
             -exportOptionsPlist assets/ExportOptions.plist \
             -allowProvisioningUpdates
 
-      - name: 🤏 Compress EasyQuit for notarization
+      - name: 🤏 Compress EasyQuit
         run: |
-          ditto -c -k --sequesterRsrc --keepParent "dist/EasyQuit.app" "dist/EasyQuit.zip"
-
-      - name: ✅ Notarize EasyQuit
-        env:
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PWD: ${{ secrets.APPLE_ID_PWD }}
-        run: |
-          xcrun notarytool store-credentials EasyQuit --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_ID_PWD"
-          xcrun notarytool submit "dist/EasyQuit.zip" --keychain-profile "EasyQuit" --wait
-          xcrun stapler staple "dist/EasyQuit.app"
-
-      - name: 🤏 Compress notarized EasyQuit
-        run: |
-          rm dist/EasyQuit.zip
           ditto -c -k --sequesterRsrc --keepParent "dist/EasyQuit.app" "dist/EasyQuit.zip"
 
       - name: 📊 Calculate SHA256
@@ -178,10 +159,11 @@ jobs:
           echo "SHA256: ${{ env.SHA256 }}"
           echo "========================================"
           echo ""
+          echo "⚠️ Note: This build is NOT notarized (requires paid Apple Developer Account)"
+          echo ""
           echo "🍺 Next steps for Homebrew:"
-          echo "1. Create a tap repository: homebrew-easyquit"
-          echo "2. Add a Cask file with this SHA256: ${{ env.SHA256 }}"
-          echo "3. Users can install with: brew install cipher-shad0w/easyquit/easyquit"
+          echo "1. Update Cask file with this SHA256: ${{ env.SHA256 }}"
+          echo "2. Users can install with: brew install cipher-shad0w/easyquit/easyquit"
           echo "========================================"
 
       - name: 🧹 Cleanup
