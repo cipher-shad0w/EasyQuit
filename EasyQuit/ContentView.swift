@@ -11,9 +11,15 @@ struct ContentView: View {
     @StateObject private var viewModel = AppListViewModel()
     @FocusState private var isSearchFocused: Bool
     @State private var selectedIndex: Int = 0
+    private let keyboardHandler = KeyboardEventHandler()
 
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            // Invisible keyboard event handler
+            KeyboardEventView(handler: keyboardHandler)
+                .frame(width: 0, height: 0)
+
+            VStack(spacing: 0) {
             // Search Bar
             HStack {
                 Image(systemName: "magnifyingglass")
@@ -82,36 +88,43 @@ struct ContentView: View {
                     }
                 }
             }
+            }
         }
         .onAppear {
             isSearchFocused = true
+            setupKeyboardHandlers()
         }
-        .onKeyPress(.upArrow) {
-            handleArrowKey(direction: .up)
-            return .handled
+    }
+
+    private func setupKeyboardHandlers() {
+        keyboardHandler.onUpArrow = {
+            self.handleArrowKey(direction: .up)
         }
-        .onKeyPress(.downArrow) {
-            handleArrowKey(direction: .down)
-            return .handled
+        keyboardHandler.onDownArrow = {
+            self.handleArrowKey(direction: .down)
         }
-        .onKeyPress(.leftArrow) {
-            handleArrowKey(direction: .left)
-            return .handled
+        keyboardHandler.onLeftArrow = {
+            self.handleArrowKey(direction: .left)
         }
-        .onKeyPress(.rightArrow) {
-            handleArrowKey(direction: .right)
-            return .handled
+        keyboardHandler.onRightArrow = {
+            self.handleArrowKey(direction: .right)
         }
-        .onKeyPress(.return) {
-            handleReturn()
-            return .handled
+        keyboardHandler.onReturn = {
+            self.handleReturn()
         }
-        .onKeyPress(.escape) {
-            if !isSearchFocused {
-                isSearchFocused = true
-                return .handled
+        keyboardHandler.onEscape = {
+            if !self.isSearchFocused {
+                self.isSearchFocused = true
             }
-            return .ignored
+        }
+        keyboardHandler.shouldHandleEvent = { event in
+            // Don't handle events if search is focused (except arrow keys to exit search)
+            if self.isSearchFocused {
+                // Allow arrow keys to move from search to grid
+                return event.keyCode == 126 || event.keyCode == 125 ||
+                       event.keyCode == 123 || event.keyCode == 124
+            }
+            return true
         }
     }
 
@@ -127,16 +140,54 @@ struct ContentView: View {
 
         let columns = 3
         let maxIndex = viewModel.filteredApps.count - 1
+        let currentRow = selectedIndex / columns
+        let currentCol = selectedIndex % columns
 
         switch direction {
         case .up:
-            selectedIndex = max(0, selectedIndex - columns)
+            // Move up one row in the same column
+            if currentRow > 0 {
+                selectedIndex = max(0, selectedIndex - columns)
+            } else {
+                // Wrap to bottom row, same column
+                let lastRow = maxIndex / columns
+                let targetIndex = lastRow * columns + currentCol
+                selectedIndex = min(maxIndex, targetIndex)
+            }
+
         case .down:
-            selectedIndex = min(maxIndex, selectedIndex + columns)
+            // Move down one row in the same column
+            let nextRowIndex = selectedIndex + columns
+            if nextRowIndex <= maxIndex {
+                selectedIndex = nextRowIndex
+            } else {
+                // Wrap to top row, same column
+                selectedIndex = currentCol
+            }
+
         case .left:
-            selectedIndex = max(0, selectedIndex - 1)
+            // Move left in the current row
+            if currentCol > 0 {
+                selectedIndex -= 1
+            } else if selectedIndex > 0 {
+                // At start of row (but not first item), wrap to end of previous row
+                selectedIndex -= 1
+            } else {
+                // At first item, wrap to last item
+                selectedIndex = maxIndex
+            }
+
         case .right:
-            selectedIndex = min(maxIndex, selectedIndex + 1)
+            // Move right in the current row
+            if currentCol < columns - 1 && selectedIndex < maxIndex {
+                selectedIndex += 1
+            } else if selectedIndex < maxIndex {
+                // At end of row, wrap to start of next row
+                selectedIndex += 1
+            } else {
+                // At last item, wrap to first item
+                selectedIndex = 0
+            }
         }
     }
 
@@ -153,6 +204,79 @@ struct ContentView: View {
 
     enum ArrowDirection {
         case up, down, left, right
+    }
+}
+
+// MARK: - Keyboard Event Handling
+
+class KeyboardEventHandler {
+    var onUpArrow: (() -> Void)?
+    var onDownArrow: (() -> Void)?
+    var onLeftArrow: (() -> Void)?
+    var onRightArrow: (() -> Void)?
+    var onReturn: (() -> Void)?
+    var onEscape: (() -> Void)?
+    var shouldHandleEvent: ((NSEvent) -> Bool)?
+
+    func handleKeyDown(_ event: NSEvent) -> Bool {
+        guard shouldHandleEvent?(event) ?? true else { return false }
+
+        switch event.keyCode {
+        case 126: // Up arrow
+            onUpArrow?()
+            return true
+        case 125: // Down arrow
+            onDownArrow?()
+            return true
+        case 123: // Left arrow
+            onLeftArrow?()
+            return true
+        case 124: // Right arrow
+            onRightArrow?()
+            return true
+        case 36: // Return
+            onReturn?()
+            return true
+        case 53: // Escape
+            onEscape?()
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+struct KeyboardEventView: NSViewRepresentable {
+    let handler: KeyboardEventHandler
+
+    func makeNSView(context: Context) -> KeyEventNSView {
+        let view = KeyEventNSView()
+        view.keyHandler = handler
+        DispatchQueue.main.async {
+            view.window?.makeFirstResponder(view)
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: KeyEventNSView, context: Context) {
+        nsView.keyHandler = handler
+    }
+}
+
+class KeyEventNSView: NSView {
+    var keyHandler: KeyboardEventHandler?
+
+    override var acceptsFirstResponder: Bool { true }
+
+    override func keyDown(with event: NSEvent) {
+        if !(keyHandler?.handleKeyDown(event) ?? false) {
+            super.keyDown(with: event)
+        }
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        window?.makeFirstResponder(self)
     }
 }
 
