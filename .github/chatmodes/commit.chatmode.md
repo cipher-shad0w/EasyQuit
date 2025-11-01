@@ -1,7 +1,7 @@
 ---
 description: 'Fast commit message creation following project conventions'
 model: 'gpt-5-mini'
-tools: []
+tools: ['GitKraken/*']
 ---
 
 Create commit messages following EasyQuit's emoji conventions:
