@@ -20,17 +20,19 @@ struct EasyQuitApp {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var menuBarManager: MenuBarManager?
+    private var menuBarManager: MenuBarManager?
     private let logger = Logger(subsystem: "com.cipher-shadow.EasyQuit", category: "AppDelegate")
+    private let container = DIContainer.shared
 
     func applicationDidFinishLaunching(_: Notification) {
         logger.info("Application did finish launching")
-        logger.info("Creating MenuBarManager...")
+        logger.info("Bootstrapping DI container and creating MenuBarManager...")
 
-        menuBarManager = MenuBarManager()
+        // Bootstrap the app with dependency injection
+        menuBarManager = container.makeMenuBarManager()
 
         logger.info("MenuBarManager created: \(self.menuBarManager != nil)")
-        logger.info("Setup complete")
+        logger.info("Setup complete - MVVM + DI architecture initialized")
     }
 
     func applicationWillTerminate(_: Notification) {

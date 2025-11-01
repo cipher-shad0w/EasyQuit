@@ -8,12 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum DefaultAction: String, CaseIterable, Identifiable {
-    case gracefulQuit = "Graceful Quit"
-    case forceQuit = "Force Quit"
-
-    var id: String { rawValue }
-}
+// Note: DefaultAction has been moved to SettingsManagerProtocol.swift
 
 struct AppSettings {
     // Keys for UserDefaults
@@ -24,5 +19,6 @@ struct AppSettings {
         static let showMultipleQuitWarning = "showMultipleQuitWarning"
         static let hideSystemApps = "hideSystemApps"
         static let compactView = "compactView"
+        static let showBackgroundApps = "showBackgroundApps"
     }
 }

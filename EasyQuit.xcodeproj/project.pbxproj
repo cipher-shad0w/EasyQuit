@@ -30,6 +30,7 @@
 		F4FB5EB52EB41317009A69A4 /* EasyQuit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EasyQuit.xcodeproj; sourceTree = "<group>"; };
 		F4FB5EE32EB41B42009A69A4 /* EasyQuit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EasyQuit.xcodeproj; sourceTree = "<group>"; };
 		F4FD51EE2EB420260013657A /* EasyQuit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EasyQuit.xcodeproj; sourceTree = "<group>"; };
+		F4FD53262EB653DB0013657A /* EasyQuit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EasyQuit.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -110,6 +111,13 @@
 			sourceTree = "<group>";
 		};
 		F4FD51F02EB420260013657A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F4FD532A2EB653DB0013657A /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -226,6 +234,10 @@
 				{
 					ProductGroup = F4FB5EE52EB41B42009A69A4 /* Products */;
 					ProjectRef = F4FB5EE32EB41B42009A69A4 /* EasyQuit.xcodeproj */;
+				},
+				{
+					ProductGroup = F4FD532A2EB653DB0013657A /* Products */;
+					ProjectRef = F4FD53262EB653DB0013657A /* EasyQuit.xcodeproj */;
 				},
 				{
 					ProductGroup = F4FD51F02EB420260013657A /* Products */;

@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("updateInterval") private var updateInterval: Double = 2.0
-    @AppStorage("defaultAction") private var defaultAction: DefaultAction = .gracefulQuit
+    @ObservedObject var viewModel: SettingsViewModel
+
     @AppStorage("showForceQuitWarning") private var showForceQuitWarning: Bool = true
     @AppStorage("showMultipleQuitWarning") private var showMultipleQuitWarning: Bool = true
     @AppStorage("hideSystemApps") private var hideSystemApps: Bool = true
     @AppStorage("compactView") private var compactView: Bool = false
-
-    @State private var globalShortcut: KeyboardShortcut?
+    @AppStorage("showBackgroundApps") private var showBackgroundApps: Bool = false
 
     @Environment(\.dismiss) private var dismiss
+
+    init(viewModel: SettingsViewModel) {
+        self.viewModel = viewModel
+    }
 
     var body: some View {
         ZStack {
@@ -41,7 +44,7 @@ struct SettingsView: View {
 
                     // Keyboard Shortcut Section
                     SettingsSection(title: "Keyboard", icon: "keyboard") {
-                        ShortcutRecorderView(shortcut: $globalShortcut)
+                        ShortcutRecorderView(shortcut: $viewModel.globalShortcut)
                     }
 
                     // Performance Section
@@ -52,9 +55,9 @@ struct SettingsView: View {
                                 .foregroundStyle(.secondary)
 
                             HStack {
-                                Slider(value: $updateInterval, in: 1...5, step: 1)
+                                Slider(value: $viewModel.updateInterval, in: 1...5, step: 1)
                                     .tint(.accentColor)
-                                Text("\(Int(updateInterval))s")
+                                Text("\(Int(viewModel.updateInterval))s")
                                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                                     .foregroundStyle(.primary)
                                     .frame(width: 30)
@@ -74,7 +77,7 @@ struct SettingsView: View {
                                         .foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Picker("", selection: $defaultAction) {
+                                Picker("", selection: $viewModel.defaultAction) {
                                     ForEach(DefaultAction.allCases) { action in
                                         Text(action.rawValue)
                                             .tag(action)
@@ -92,6 +95,18 @@ struct SettingsView: View {
                                 icon: "shield.checkered",
                                 isOn: $hideSystemApps
                             )
+
+                            Divider()
+
+                            SettingsToggle(
+                                title: "Show Background Apps",
+                                description: "Include apps without icons",
+                                icon: "app.badge",
+                                isOn: $showBackgroundApps
+                            )
+                            .onChange(of: showBackgroundApps) { newValue in
+                                viewModel.updateShowBackgroundApps(newValue)
+                            }
                         }
                     }
 
@@ -132,38 +147,6 @@ struct SettingsView: View {
             }
         }
         .frame(width: 450, height: 550)
-        .onAppear {
-            loadShortcutFromUserDefaults()
-        }
-        .onChange(of: globalShortcut) { _, newValue in
-            saveShortcutToUserDefaults()
-            notifyShortcutChange()
-        }
-    }
-
-    private func loadShortcutFromUserDefaults() {
-        guard let data = UserDefaults.standard.data(forKey: "globalShortcut"),
-              let shortcut = try? JSONDecoder().decode(KeyboardShortcut.self, from: data) else {
-            return
-        }
-        globalShortcut = shortcut
-    }
-
-    private func saveShortcutToUserDefaults() {
-        if let shortcut = globalShortcut,
-           let data = try? JSONEncoder().encode(shortcut) {
-            UserDefaults.standard.set(data, forKey: "globalShortcut")
-        } else {
-            UserDefaults.standard.removeObject(forKey: "globalShortcut")
-        }
-    }
-
-    private func notifyShortcutChange() {
-        NotificationCenter.default.post(
-            name: NSNotification.Name("GlobalShortcutChanged"),
-            object: nil,
-            userInfo: ["shortcut": globalShortcut as Any]
-        )
     }
 }
 
@@ -254,5 +237,5 @@ struct VisualEffectBlur: NSViewRepresentable {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(viewModel: SettingsViewModel(settingsManager: DIContainer.shared.settingsManager))
 }

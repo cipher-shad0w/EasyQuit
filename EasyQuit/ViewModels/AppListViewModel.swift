@@ -2,29 +2,26 @@
 //  AppListViewModel.swift
 //  EasyQuit
 //
-//  Created by cipher-shad0w on 30/10/2025
-//
+//  ViewModel for managing the application list
 
 import AppKit
 import Combine
 import Foundation
 
-class AppListViewModel: ObservableObject {
+final class AppListViewModel: ObservableObject {
     @Published var runningApps: [RunningApp] = []
     @Published var searchText: String = ""
     @Published var ignoredApps: Set<String> = []
 
-    private var timer: Timer?
-    private var workspace = NSWorkspace.shared
+    private let processManager: ProcessManagerProtocol
+    private var settingsManager: SettingsManagerProtocol
+    private let eventPublisher: EventPublisherProtocol
+    private let configuration: AppConfiguration
 
-    // System apps that should be hidden
-    private let protectedBundleIdentifiers = [
-        "com.apple.finder",
-        "com.apple.systemuiserver",
-        "com.apple.dock",
-        "com.apple.loginwindow",
-        "com.apple.WindowManager"
-    ]
+    private var timer: Timer?
+    private var cancellables = Set<AnyCancellable>()
+    private let refreshQueue = DispatchQueue(label: "com.easyquit.refreshQueue")
+    private var isRefreshing = false
 
     var filteredApps: [RunningApp] {
         let apps = runningApps.filter { app in
@@ -41,7 +38,21 @@ class AppListViewModel: ObservableObject {
         }
     }
 
-    init() {
+    init(
+        processManager: ProcessManagerProtocol,
+        settingsManager: SettingsManagerProtocol,
+        eventPublisher: EventPublisherProtocol,
+        configuration: AppConfiguration
+    ) {
+        self.processManager = processManager
+        self.settingsManager = settingsManager
+        self.eventPublisher = eventPublisher
+        self.configuration = configuration
+
+        // Load ignored apps from settings
+        self.ignoredApps = settingsManager.ignoredApps
+
+        setupBindings()
         refreshApps()
         startAutoRefresh()
     }
@@ -50,33 +61,83 @@ class AppListViewModel: ObservableObject {
         timer?.invalidate()
     }
 
-    func refreshApps() {
-        let apps = workspace.runningApplications
-            .filter { app in
-                // Filter out background apps and protected system apps
-                guard app.activationPolicy == .regular else { return false }
-                guard let bundleId = app.bundleIdentifier else { return false }
-                return !protectedBundleIdentifiers.contains(bundleId)
+    private func setupBindings() {
+        // Subscribe to update interval changes
+        settingsManager.updateIntervalPublisher
+            .sink { [weak self] interval in
+                self?.restartAutoRefresh(with: interval)
             }
-            .map { RunningApp(from: $0) }
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            .store(in: &cancellables)
 
-        DispatchQueue.main.async {
-            self.runningApps = apps
+        // Subscribe to showBackgroundApps changes
+        settingsManager.showBackgroundAppsPublisher
+            .sink { [weak self] _ in
+                self?.refreshApps()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func restartAutoRefresh(with interval: Double) {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+            self?.refreshApps()
+        }
+    }
+
+    func refreshApps() {
+        refreshQueue.async { [weak self] in
+            guard let self = self else { return }
+
+            // Prevent concurrent refreshes
+            guard !self.isRefreshing else { return }
+            self.isRefreshing = true
+
+            let showBackgroundApps = self.settingsManager.showBackgroundApps
+            let apps = self.processManager.getRunningApplications(includeBackground: showBackgroundApps)
+                .filter { app in
+                    // Filter out protected system apps
+                    guard let bundleId = app.bundleIdentifier else { return false }
+                    return !self.configuration.protectedBundleIdentifiers.contains(bundleId)
+                }
+
+            // Deduplicate apps by process ID and bundle identifier
+            var seenPIDs = Set<Int>()
+            var seenBundleIds = Set<String>()
+            let uniqueApps = apps.filter { app in
+                let pidIsUnique = seenPIDs.insert(app.id).inserted
+
+                // For apps with bundle IDs, also check bundle ID uniqueness
+                if let bundleId = app.bundleIdentifier {
+                    let bundleIdIsUnique = seenBundleIds.insert(bundleId).inserted
+                    return pidIsUnique && bundleIdIsUnique
+                }
+
+                return pidIsUnique
+            }
+
+            let sortedApps = uniqueApps.sorted {
+                $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+            }
+
+            DispatchQueue.main.async {
+                self.runningApps = sortedApps
+                self.isRefreshing = false
+            }
         }
     }
 
     private func startAutoRefresh() {
-        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+        let interval = settingsManager.updateInterval
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.refreshApps()
         }
     }
 
     func quitApp(_ app: RunningApp, force: Bool = false) {
-        if force {
-            app.application.forceTerminate()
-        } else {
-            app.application.terminate()
+        let success = force ? processManager.forceTerminate(app) : processManager.terminate(app)
+
+        if success, let bundleId = app.bundleIdentifier {
+            eventPublisher.publish(.applicationQuit(bundleId))
         }
 
         // Refresh after a short delay
@@ -86,29 +147,34 @@ class AppListViewModel: ObservableObject {
     }
 
     func restartApp(_ app: RunningApp) {
-        guard let bundleURL = app.application.bundleURL else { return }
+        let success = processManager.restart(app)
 
-        // Terminate the app first
-        app.application.terminate()
+        if success, let bundleId = app.bundleIdentifier {
+            eventPublisher.publish(.applicationRestarted(bundleId))
+        }
 
-        // Relaunch after a short delay
+        // Refresh after a short delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            NSWorkspace.shared.openApplication(at: bundleURL, configuration: NSWorkspace.OpenConfiguration())
             self.refreshApps()
         }
     }
 
     func showInFinder(_ app: RunningApp) {
-        guard let bundleURL = app.application.bundleURL else { return }
-        NSWorkspace.shared.activateFileViewerSelecting([bundleURL])
+        processManager.showInFinder(app)
     }
 
     func ignoreApp(_ app: RunningApp) {
         guard let bundleId = app.bundleIdentifier else { return }
         ignoredApps.insert(bundleId)
+
+        // Persist to settings
+        settingsManager.ignoredApps = ignoredApps
     }
 
     func unignoreAll() {
         ignoredApps.removeAll()
+
+        // Persist to settings
+        settingsManager.ignoredApps = ignoredApps
     }
 }

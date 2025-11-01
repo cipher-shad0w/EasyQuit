@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var viewModel = AppListViewModel()
+    @ObservedObject var viewModel: AppListViewModel
     @FocusState private var isSearchFocused: Bool
     @State private var selectedIndex: Int = 0
     private let keyboardHandler = KeyboardEventHandler()
+
+    init(viewModel: AppListViewModel) {
+        self.viewModel = viewModel
+    }
 
     var body: some View {
         ZStack {
@@ -281,5 +285,5 @@ class KeyEventNSView: NSView {
 }
 
 #Preview {
-    ContentView()
+    ContentView(viewModel: DIContainer.shared.makeAppListViewModel())
 }

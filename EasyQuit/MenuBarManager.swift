@@ -2,30 +2,46 @@
 //  MenuBarManager.swift
 //  EasyQuit
 //
-//  Created by cipher-shad0w on 30/10/2025
-//
+//  Manager for menu bar UI and coordination
 
 import AppKit
+import Combine
 import os.log
 import SwiftUI
 
-class MenuBarManager: NSObject {
+final class MenuBarManager: NSObject {
     private var statusItem: NSStatusItem?
     private var popover: NSPopover?
     private var settingsWindow: NSWindow?
     private let logger = Logger(subsystem: "com.cipher-shadow.EasyQuit", category: "MenuBarManager")
-    private let hotkeyManager = HotkeyManager()
 
-    override init() {
+    private var hotkeyManager: HotkeyManagerProtocol
+    private let settingsManager: SettingsManagerProtocol
+    private let eventPublisher: EventPublisherProtocol
+    private let makeAppListViewModel: () -> AppListViewModel
+    private let makeSettingsViewModel: () -> SettingsViewModel
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init(
+        hotkeyManager: HotkeyManagerProtocol,
+        settingsManager: SettingsManagerProtocol,
+        eventPublisher: EventPublisherProtocol,
+        makeAppListViewModel: @escaping () -> AppListViewModel,
+        makeSettingsViewModel: @escaping () -> SettingsViewModel
+    ) {
+        self.hotkeyManager = hotkeyManager
+        self.settingsManager = settingsManager
+        self.eventPublisher = eventPublisher
+        self.makeAppListViewModel = makeAppListViewModel
+        self.makeSettingsViewModel = makeSettingsViewModel
+
         super.init()
+
         logger.info("MenuBarManager init started")
         setupMenuBar()
         setupHotkey()
         observeShortcutChanges()
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 
     private func setupMenuBar() {
@@ -50,7 +66,10 @@ class MenuBarManager: NSObject {
         popover = NSPopover()
         popover?.contentSize = NSSize(width: 300, height: 245)
         popover?.behavior = .transient
-        popover?.contentViewController = NSHostingController(rootView: ContentView())
+
+        // Create ContentView with injected ViewModel
+        let viewModel = makeAppListViewModel()
+        popover?.contentViewController = NSHostingController(rootView: ContentView(viewModel: viewModel))
         logger.info("Popover created and configured")
     }
 
@@ -110,8 +129,9 @@ class MenuBarManager: NSObject {
             return
         }
 
-        // Create settings window
-        let settingsView = SettingsView()
+        // Create settings window with ViewModel
+        let settingsViewModel = makeSettingsViewModel()
+        let settingsView = SettingsView(viewModel: settingsViewModel)
         let hostingController = NSHostingController(rootView: settingsView)
 
         let window = NSWindow(contentViewController: hostingController)
@@ -164,9 +184,8 @@ class MenuBarManager: NSObject {
     private func setupHotkey() {
         logger.info("Setting up hotkey")
 
-        // Load saved shortcut from UserDefaults
-        if let data = UserDefaults.standard.data(forKey: "globalShortcut"),
-           let shortcut = try? JSONDecoder().decode(KeyboardShortcut.self, from: data) {
+        // Load saved shortcut from SettingsManager
+        if let shortcut = settingsManager.globalShortcut {
             registerHotkey(shortcut)
         }
 
@@ -179,26 +198,30 @@ class MenuBarManager: NSObject {
     }
 
     private func observeShortcutChanges() {
-        NotificationCenter.default.addObserver(
-            forName: NSNotification.Name("GlobalShortcutChanged"),
-            object: nil,
-            queue: .main
-        ) { [weak self] notification in
-            if let shortcut = notification.userInfo?["shortcut"] as? KeyboardShortcut {
-                self?.registerHotkey(shortcut)
-            } else {
-                self?.hotkeyManager.unregisterHotkey()
-                self?.logger.info("Hotkey unregistered")
+        // Subscribe to shortcut changes via EventPublisher
+        eventPublisher.eventPublisher
+            .sink { [weak self] event in
+                guard let self else { return }
+
+                switch event {
+                case .shortcutChanged(let shortcut):
+                    if let shortcut = shortcut {
+                        self.registerHotkey(shortcut)
+                    } else {
+                        self.hotkeyManager.unregisterHotkey()
+                        self.logger.info("Hotkey unregistered")
+                    }
+                default:
+                    break
+                }
             }
-        }
+            .store(in: &cancellables)
     }
 
     private func registerHotkey(_ shortcut: KeyboardShortcut) {
         logger.info("Registering hotkey: \(shortcut.displayString)")
-        let success = hotkeyManager.registerHotkey(
-            keyCode: UInt32(shortcut.keyCode),
-            modifiers: shortcut.carbonModifiers
-        )
+        let success = hotkeyManager.registerHotkey(shortcut)
+
         if success {
             logger.info("Hotkey registered successfully: \(shortcut.displayString)")
         } else {
