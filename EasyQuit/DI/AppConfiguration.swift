@@ -28,9 +28,6 @@ struct AppConfiguration {
 
     // MARK: - Settings
 
-    /// Default action for quitting apps
-    let defaultAction: DefaultAction = .gracefulQuit
-
     /// Minimum update interval (in seconds)
     let minUpdateInterval: Double = 0.5
 

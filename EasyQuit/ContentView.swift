@@ -75,7 +75,7 @@ struct ContentView: View {
                                     viewModel.ignoreApp(app)
                                 }
                             )
-                            .id(index)
+                            .id(app.id)
                             .transition(.asymmetric(
                                 insertion: .scale.combined(with: .opacity),
                                 removal: .scale.combined(with: .opacity)

@@ -13,10 +13,8 @@ final class SettingsManager: SettingsManagerProtocol {
 
     private enum Keys {
         static let updateInterval = "updateInterval"
-        static let defaultAction = "defaultAction"
         static let globalShortcut = "globalShortcut"
         static let ignoredApps = "ignoredApps"
-        static let showBackgroundApps = "showBackgroundApps"
     }
 
     // MARK: - Properties
@@ -25,24 +23,14 @@ final class SettingsManager: SettingsManagerProtocol {
     private let eventPublisher: EventPublisherProtocol?
 
     private let updateIntervalSubject = CurrentValueSubject<Double, Never>(2.0)
-    private let defaultActionSubject = CurrentValueSubject<DefaultAction, Never>(.gracefulQuit)
     private let globalShortcutSubject = CurrentValueSubject<KeyboardShortcut?, Never>(nil)
-    private let showBackgroundAppsSubject = CurrentValueSubject<Bool, Never>(false)
 
     var updateIntervalPublisher: AnyPublisher<Double, Never> {
         updateIntervalSubject.eraseToAnyPublisher()
     }
 
-    var defaultActionPublisher: AnyPublisher<DefaultAction, Never> {
-        defaultActionSubject.eraseToAnyPublisher()
-    }
-
     var globalShortcutPublisher: AnyPublisher<KeyboardShortcut?, Never> {
         globalShortcutSubject.eraseToAnyPublisher()
-    }
-
-    var showBackgroundAppsPublisher: AnyPublisher<Bool, Never> {
-        showBackgroundAppsSubject.eraseToAnyPublisher()
     }
 
     // MARK: - Settings Properties
@@ -55,20 +43,6 @@ final class SettingsManager: SettingsManagerProtocol {
         set {
             userDefaults.set(newValue, forKey: Keys.updateInterval)
             updateIntervalSubject.send(newValue)
-        }
-    }
-
-    var defaultAction: DefaultAction {
-        get {
-            guard let rawValue = userDefaults.string(forKey: Keys.defaultAction),
-                  let action = DefaultAction(rawValue: rawValue) else {
-                return .gracefulQuit
-            }
-            return action
-        }
-        set {
-            userDefaults.set(newValue.rawValue, forKey: Keys.defaultAction)
-            defaultActionSubject.send(newValue)
         }
     }
 
@@ -103,16 +77,6 @@ final class SettingsManager: SettingsManagerProtocol {
         }
     }
 
-    var showBackgroundApps: Bool {
-        get {
-            userDefaults.bool(forKey: Keys.showBackgroundApps)
-        }
-        set {
-            userDefaults.set(newValue, forKey: Keys.showBackgroundApps)
-            showBackgroundAppsSubject.send(newValue)
-        }
-    }
-
     // MARK: - Init
 
     init(userDefaults: UserDefaults = .standard, eventPublisher: EventPublisherProtocol? = nil) {
@@ -121,16 +85,13 @@ final class SettingsManager: SettingsManagerProtocol {
 
         // Load initial values
         updateIntervalSubject.send(updateInterval)
-        defaultActionSubject.send(defaultAction)
         globalShortcutSubject.send(globalShortcut)
-        showBackgroundAppsSubject.send(showBackgroundApps)
     }
 
     // MARK: - Methods
 
     func resetToDefaults() {
         updateInterval = 2.0
-        defaultAction = .gracefulQuit
         globalShortcut = nil
         ignoredApps = []
     }

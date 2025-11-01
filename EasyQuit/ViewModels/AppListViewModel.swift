@@ -68,13 +68,6 @@ final class AppListViewModel: ObservableObject {
                 self?.restartAutoRefresh(with: interval)
             }
             .store(in: &cancellables)
-
-        // Subscribe to showBackgroundApps changes
-        settingsManager.showBackgroundAppsPublisher
-            .sink { [weak self] _ in
-                self?.refreshApps()
-            }
-            .store(in: &cancellables)
     }
 
     private func restartAutoRefresh(with interval: Double) {
@@ -92,8 +85,7 @@ final class AppListViewModel: ObservableObject {
             guard !self.isRefreshing else { return }
             self.isRefreshing = true
 
-            let showBackgroundApps = self.settingsManager.showBackgroundApps
-            let apps = self.processManager.getRunningApplications(includeBackground: showBackgroundApps)
+            let apps = self.processManager.getRunningApplications(includeBackground: false)
                 .filter { app in
                     // Filter out protected system apps
                     guard let bundleId = app.bundleIdentifier else { return false }

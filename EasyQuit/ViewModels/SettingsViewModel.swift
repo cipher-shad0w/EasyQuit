@@ -16,14 +16,6 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 
-    @Published var defaultAction: DefaultAction {
-        didSet {
-            if defaultAction != settingsManager.defaultAction {
-                settingsManager.defaultAction = defaultAction
-            }
-        }
-    }
-
     @Published var globalShortcut: KeyboardShortcut? {
         didSet {
             if globalShortcut != settingsManager.globalShortcut {
@@ -40,7 +32,6 @@ final class SettingsViewModel: ObservableObject {
 
         // Initialize from settings manager
         self.updateInterval = settingsManager.updateInterval
-        self.defaultAction = settingsManager.defaultAction
         self.globalShortcut = settingsManager.globalShortcut
 
         // Subscribe to external changes
@@ -52,13 +43,6 @@ final class SettingsViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 guard let self, self.updateInterval != newValue else { return }
                 self.updateInterval = newValue
-            }
-            .store(in: &cancellables)
-
-        settingsManager.defaultActionPublisher
-            .sink { [weak self] newValue in
-                guard let self, self.defaultAction != newValue else { return }
-                self.defaultAction = newValue
             }
             .store(in: &cancellables)
 
@@ -77,9 +61,5 @@ final class SettingsViewModel: ObservableObject {
 
     func resetToDefaults() {
         settingsManager.resetToDefaults()
-    }
-
-    func updateShowBackgroundApps(_ value: Bool) {
-        settingsManager.showBackgroundApps = value
     }
 }
