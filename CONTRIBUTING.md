@@ -141,7 +141,6 @@ git commit -m "Your detailed commit message"
 # 📄 Documentation changes must include a paper emoji.
 # 🔧 Refactorings must include a wrench emoji.
 # 🧪 Tests must include a test tube emoji.
-# 🎨 UI/UX changes must include a palette emoji.
 # 🛠️ Build or infrastructure changes must include a hammer and wrench emoji.
 # ⚡ Performance improvements must include a lightning emoji.
 # ♻️ Code style or formatting changes must include a recycling emoji.
