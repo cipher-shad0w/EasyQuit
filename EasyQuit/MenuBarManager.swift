@@ -135,11 +135,13 @@ final class MenuBarManager: NSObject {
         let hostingController = NSHostingController(rootView: settingsView)
 
         let window = NSWindow(contentViewController: hostingController)
-        window.title = "Settings"
-        window.styleMask = [.titled, .closable, .fullSizeContentView]
+        window.title = "Easy Quit Settings"
+        window.styleMask = [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView]
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = true
         window.backgroundColor = .clear
+        window.setContentSize(NSSize(width: 700, height: 500))
+        window.minSize = NSSize(width: 600, height: 400)
         window.center()
         window.makeKeyAndOrderFront(nil)
 
