@@ -24,6 +24,22 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 
+    @Published var ignoredApps: Set<String> {
+        didSet {
+            if ignoredApps != settingsManager.ignoredApps {
+                settingsManager.ignoredApps = ignoredApps
+            }
+        }
+    }
+
+    @Published var includedApps: Set<String> {
+        didSet {
+            if includedApps != settingsManager.includedApps {
+                settingsManager.includedApps = includedApps
+            }
+        }
+    }
+
     private var settingsManager: SettingsManagerProtocol
     private var cancellables = Set<AnyCancellable>()
 
@@ -33,6 +49,8 @@ final class SettingsViewModel: ObservableObject {
         // Initialize from settings manager
         self.updateInterval = settingsManager.updateInterval
         self.globalShortcut = settingsManager.globalShortcut
+        self.ignoredApps = settingsManager.ignoredApps
+        self.includedApps = settingsManager.includedApps
 
         // Subscribe to external changes
         setupBindings()
@@ -61,5 +79,23 @@ final class SettingsViewModel: ObservableObject {
 
     func resetToDefaults() {
         settingsManager.resetToDefaults()
+    }
+
+    // MARK: - App Management
+
+    func addIgnoredApp(_ bundleIdentifier: String) {
+        ignoredApps.insert(bundleIdentifier)
+    }
+
+    func removeIgnoredApp(_ bundleIdentifier: String) {
+        ignoredApps.remove(bundleIdentifier)
+    }
+
+    func addIncludedApp(_ bundleIdentifier: String) {
+        includedApps.insert(bundleIdentifier)
+    }
+
+    func removeIncludedApp(_ bundleIdentifier: String) {
+        includedApps.remove(bundleIdentifier)
     }
 }

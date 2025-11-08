@@ -13,6 +13,10 @@ protocol ProcessManagerProtocol {
     /// - Parameter includeBackground: Whether to include background apps without icons
     func getRunningApplications(includeBackground: Bool) -> [RunningApp]
 
+    /// Get running applications matching specific bundle IDs (including background apps)
+    /// - Parameter bundleIds: Set of bundle identifiers to match
+    func getIncludedBackgroundApps(bundleIds: Set<String>) -> [RunningApp]
+
     /// Terminate an application gracefully
     /// - Parameter app: The running app to terminate
     /// - Returns: True if termination was successful

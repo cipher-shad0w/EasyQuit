@@ -12,6 +12,7 @@ final class AppListViewModel: ObservableObject {
     @Published var runningApps: [RunningApp] = []
     @Published var searchText: String = ""
     @Published var ignoredApps: Set<String> = []
+    @Published var includedApps: Set<String> = []
 
     private let processManager: ProcessManagerProtocol
     private var settingsManager: SettingsManagerProtocol
@@ -49,8 +50,9 @@ final class AppListViewModel: ObservableObject {
         self.eventPublisher = eventPublisher
         self.configuration = configuration
 
-        // Load ignored apps from settings
+        // Load ignored and included apps from settings
         self.ignoredApps = settingsManager.ignoredApps
+        self.includedApps = settingsManager.includedApps
 
         setupBindings()
         refreshApps()
@@ -66,6 +68,27 @@ final class AppListViewModel: ObservableObject {
         settingsManager.updateIntervalPublisher
             .sink { [weak self] interval in
                 self?.restartAutoRefresh(with: interval)
+            }
+            .store(in: &cancellables)
+
+        // Subscribe to ignored apps changes
+        settingsManager.ignoredAppsPublisher
+            .sink { [weak self] newIgnoredApps in
+                guard let self else { return }
+                if self.ignoredApps != newIgnoredApps {
+                    self.ignoredApps = newIgnoredApps
+                }
+            }
+            .store(in: &cancellables)
+
+        // Subscribe to included apps changes
+        settingsManager.includedAppsPublisher
+            .sink { [weak self] newIncludedApps in
+                guard let self else { return }
+                if self.includedApps != newIncludedApps {
+                    self.includedApps = newIncludedApps
+                    self.refreshApps()
+                }
             }
             .store(in: &cancellables)
     }
@@ -85,17 +108,29 @@ final class AppListViewModel: ObservableObject {
             guard !self.isRefreshing else { return }
             self.isRefreshing = true
 
-            let apps = self.processManager.getRunningApplications(includeBackground: false)
+            // Get regular foreground apps
+            let regularApps = self.processManager.getRunningApplications(includeBackground: false)
                 .filter { app in
                     // Filter out protected system apps
                     guard let bundleId = app.bundleIdentifier else { return false }
                     return !self.configuration.protectedBundleIdentifiers.contains(bundleId)
                 }
 
+            // Get included background apps
+            let includedBackgroundApps = self.processManager.getIncludedBackgroundApps(bundleIds: self.includedApps)
+                .filter { app in
+                    // Filter out protected system apps
+                    guard let bundleId = app.bundleIdentifier else { return false }
+                    return !self.configuration.protectedBundleIdentifiers.contains(bundleId)
+                }
+
+            // Combine both lists
+            let allApps = regularApps + includedBackgroundApps
+
             // Deduplicate apps by process ID and bundle identifier
             var seenPIDs = Set<Int>()
             var seenBundleIds = Set<String>()
-            let uniqueApps = apps.filter { app in
+            let uniqueApps = allApps.filter { app in
                 let pidIsUnique = seenPIDs.insert(app.id).inserted
 
                 // For apps with bundle IDs, also check bundle ID uniqueness

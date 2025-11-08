@@ -32,6 +32,20 @@ final class ProcessManager: ProcessManagerProtocol {
             }
     }
 
+    func getIncludedBackgroundApps(bundleIds: Set<String>) -> [RunningApp] {
+        workspace.runningApplications
+            .filter { app in
+                // Only include apps with matching bundle IDs
+                if let bundleId = app.bundleIdentifier {
+                    return bundleIds.contains(bundleId)
+                }
+                return false
+            }
+            .map { app in
+                RunningApp(from: app)
+            }
+    }
+
     @discardableResult
     func terminate(_ app: RunningApp) -> Bool {
         app.application.terminate()

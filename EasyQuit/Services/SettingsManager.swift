@@ -15,6 +15,7 @@ final class SettingsManager: SettingsManagerProtocol {
         static let updateInterval = "updateInterval"
         static let globalShortcut = "globalShortcut"
         static let ignoredApps = "ignoredApps"
+        static let includedApps = "includedApps"
     }
 
     // MARK: - Properties
@@ -24,6 +25,8 @@ final class SettingsManager: SettingsManagerProtocol {
 
     private let updateIntervalSubject = CurrentValueSubject<Double, Never>(2.0)
     private let globalShortcutSubject = CurrentValueSubject<KeyboardShortcut?, Never>(nil)
+    private let ignoredAppsSubject = CurrentValueSubject<Set<String>, Never>([])
+    private let includedAppsSubject = CurrentValueSubject<Set<String>, Never>([])
 
     var updateIntervalPublisher: AnyPublisher<Double, Never> {
         updateIntervalSubject.eraseToAnyPublisher()
@@ -31,6 +34,14 @@ final class SettingsManager: SettingsManagerProtocol {
 
     var globalShortcutPublisher: AnyPublisher<KeyboardShortcut?, Never> {
         globalShortcutSubject.eraseToAnyPublisher()
+    }
+
+    var ignoredAppsPublisher: AnyPublisher<Set<String>, Never> {
+        ignoredAppsSubject.eraseToAnyPublisher()
+    }
+
+    var includedAppsPublisher: AnyPublisher<Set<String>, Never> {
+        includedAppsSubject.eraseToAnyPublisher()
     }
 
     // MARK: - Settings Properties
@@ -74,6 +85,18 @@ final class SettingsManager: SettingsManagerProtocol {
         }
         set {
             userDefaults.set(Array(newValue), forKey: Keys.ignoredApps)
+            ignoredAppsSubject.send(newValue)
+        }
+    }
+
+    var includedApps: Set<String> {
+        get {
+            let array = userDefaults.stringArray(forKey: Keys.includedApps) ?? []
+            return Set(array)
+        }
+        set {
+            userDefaults.set(Array(newValue), forKey: Keys.includedApps)
+            includedAppsSubject.send(newValue)
         }
     }
 
@@ -86,6 +109,8 @@ final class SettingsManager: SettingsManagerProtocol {
         // Load initial values
         updateIntervalSubject.send(updateInterval)
         globalShortcutSubject.send(globalShortcut)
+        ignoredAppsSubject.send(ignoredApps)
+        includedAppsSubject.send(includedApps)
     }
 
     // MARK: - Methods
@@ -94,5 +119,6 @@ final class SettingsManager: SettingsManagerProtocol {
         updateInterval = 2.0
         globalShortcut = nil
         ignoredApps = []
+        includedApps = []
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Settings Section Enum
 
@@ -13,6 +14,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
     case getStarted = "Get Started"
     case general = "General"
     case shortcuts = "Shortcuts"
+    case includedApps = "Included Apps"
     case excludedApps = "Excluded Apps"
     case about = "About"
 
@@ -23,6 +25,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .getStarted: return "star.fill"
         case .general: return "gearshape.fill"
         case .shortcuts: return "keyboard.fill"
+        case .includedApps: return "app.badge.checkmark.fill"
         case .excludedApps: return "app.badge.fill"
         case .about: return "info.circle.fill"
         }
@@ -94,8 +97,10 @@ struct SettingsView: View {
             GeneralSettingsView(viewModel: viewModel)
         case .shortcuts:
             ShortcutsView(viewModel: viewModel)
+        case .includedApps:
+            IncludedAppsView(viewModel: viewModel)
         case .excludedApps:
-            ExcludedAppsView()
+            ExcludedAppsView(viewModel: viewModel)
         case .about:
             AboutView()
         }
@@ -310,17 +315,16 @@ struct ShortcutsView: View {
 
 // MARK: - Excluded Apps View
 
-struct ExcludedAppsView: View {
-    @State private var excludedApps: [String] = []
-    @State private var showingAddApp = false
+struct IncludedAppsView: View {
+    @ObservedObject var viewModel: SettingsViewModel
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Excluded Apps")
+                    Text("Included Apps")
                         .font(.system(size: 24, weight: .semibold, design: .rounded))
-                    Text("Applications that won't appear in EasyQuit")
+                    Text("Background applications that should appear in EasyQuit")
                         .font(.system(size: 13))
                         .foregroundStyle(.secondary)
                 }
@@ -328,25 +332,25 @@ struct ExcludedAppsView: View {
 
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
-                        Text("Protected Applications")
+                        Text("Background Applications")
                             .font(.system(size: 15, weight: .semibold))
                         Spacer()
-                        Button(action: { showingAddApp = true }) {
+                        Button(action: selectAppFromFinder) {
                             Label("Add App", systemImage: "plus.circle.fill")
                                 .font(.system(size: 13, weight: .medium))
                         }
                         .buttonStyle(.borderless)
                     }
 
-                    if excludedApps.isEmpty {
+                    if viewModel.includedApps.isEmpty {
                         VStack(spacing: 12) {
                             Image(systemName: "app.badge.checkmark")
                                 .font(.system(size: 40))
                                 .foregroundStyle(.secondary)
-                            Text("No excluded apps")
+                            Text("No included apps")
                                 .font(.system(size: 13))
                                 .foregroundStyle(.secondary)
-                            Text("Add applications that you want to protect from accidental closure")
+                            Text("Add background applications that you want to see in EasyQuit")
                                 .font(.system(size: 11))
                                 .foregroundStyle(.tertiary)
                                 .multilineTextAlignment(.center)
@@ -355,25 +359,9 @@ struct ExcludedAppsView: View {
                         .padding(32)
                     } else {
                         VStack(spacing: 8) {
-                            ForEach(excludedApps, id: \.self) { app in
-                                HStack {
-                                    Image(systemName: "app.fill")
-                                        .foregroundColor(.accentColor)
-                                    Text(app)
-                                        .font(.system(size: 13))
-                                    Spacer()
-                                    Button(action: {
-                                        excludedApps.removeAll { $0 == app }
-                                    }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    .buttonStyle(.borderless)
-                                }
-                                .padding(12)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .fill(.ultraThinMaterial)
+                            ForEach(Array(viewModel.includedApps), id: \.self) { bundleId in
+                                AppRowView(bundleId: bundleId) {
+                                    viewModel.removeIncludedApp(bundleId)
                                 }
                             }
                         }
@@ -392,6 +380,166 @@ struct ExcludedAppsView: View {
                 Spacer()
             }
             .padding(24)
+        }
+    }
+
+    private func selectAppFromFinder() {
+        let openPanel = NSOpenPanel()
+        openPanel.title = "Select Application"
+        openPanel.message = "Choose an application to include in EasyQuit"
+        openPanel.canChooseFiles = true
+        openPanel.canChooseDirectories = false
+        openPanel.allowsMultipleSelection = false
+        openPanel.allowedContentTypes = [.application]
+        openPanel.directoryURL = URL(fileURLWithPath: "/Applications")
+
+        openPanel.begin { response in
+            guard response == .OK,
+                  let url = openPanel.url,
+                  let bundle = Bundle(url: url),
+                  let bundleId = bundle.bundleIdentifier else {
+                return
+            }
+
+            viewModel.addIncludedApp(bundleId)
+        }
+    }
+}
+
+struct AppRowView: View {
+    let bundleId: String
+    let onRemove: () -> Void
+
+    var body: some View {
+        HStack {
+            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+                Image(nsImage: NSWorkspace.shared.icon(forFile: appURL.path))
+                    .resizable()
+                    .frame(width: 24, height: 24)
+            } else {
+                Image(systemName: "app.fill")
+                    .foregroundColor(.accentColor)
+                    .frame(width: 24, height: 24)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId),
+                   let appName = FileManager.default.displayName(atPath: appURL.path).components(separatedBy: ".").first {
+                    Text(appName)
+                        .font(.system(size: 13, weight: .medium))
+                } else {
+                    Text(bundleId)
+                        .font(.system(size: 13, weight: .medium))
+                }
+
+                Text(bundleId)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button(action: onRemove) {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.borderless)
+        }
+        .padding(12)
+        .background {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(.ultraThinMaterial)
+        }
+    }
+}
+
+struct ExcludedAppsView: View {
+    @ObservedObject var viewModel: SettingsViewModel
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Excluded Apps")
+                        .font(.system(size: 24, weight: .semibold, design: .rounded))
+                    Text("Applications that won't appear in EasyQuit")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        Text("Protected Applications")
+                            .font(.system(size: 15, weight: .semibold))
+                        Spacer()
+                        Button(action: selectAppFromFinder) {
+                            Label("Add App", systemImage: "plus.circle.fill")
+                                .font(.system(size: 13, weight: .medium))
+                        }
+                        .buttonStyle(.borderless)
+                    }
+
+                    if viewModel.ignoredApps.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "app.badge.checkmark")
+                                .font(.system(size: 40))
+                                .foregroundStyle(.secondary)
+                            Text("No excluded apps")
+                                .font(.system(size: 13))
+                                .foregroundStyle(.secondary)
+                            Text("Add applications that you want to protect from accidental closure")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.tertiary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(32)
+                    } else {
+                        VStack(spacing: 8) {
+                            ForEach(Array(viewModel.ignoredApps), id: \.self) { bundleId in
+                                AppRowView(bundleId: bundleId) {
+                                    viewModel.removeIgnoredApp(bundleId)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(.ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .strokeBorder(.white.opacity(0.1), lineWidth: 1)
+                        }
+                }
+
+                Spacer()
+            }
+            .padding(24)
+        }
+    }
+
+    private func selectAppFromFinder() {
+        let openPanel = NSOpenPanel()
+        openPanel.title = "Select Application"
+        openPanel.message = "Choose an application to exclude from EasyQuit"
+        openPanel.canChooseFiles = true
+        openPanel.canChooseDirectories = false
+        openPanel.allowsMultipleSelection = false
+        openPanel.allowedContentTypes = [.application]
+        openPanel.directoryURL = URL(fileURLWithPath: "/Applications")
+
+        openPanel.begin { response in
+            guard response == .OK,
+                  let url = openPanel.url,
+                  let bundle = Bundle(url: url),
+                  let bundleId = bundle.bundleIdentifier else {
+                return
+            }
+
+            viewModel.addIgnoredApp(bundleId)
         }
     }
 }
